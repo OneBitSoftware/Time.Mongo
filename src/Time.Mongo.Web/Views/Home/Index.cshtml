@@ -1,0 +1,79 @@
+﻿@using System.Linq
+@using MongoDB.Bson
+@using Time.Mongo.Web.Controllers
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+<script type="text/javascript">
+    window.onload = function setOnLoadDate() {
+        document.getElementById('dateFromClientHidden').value = new Date();
+    }
+</script>
+<style>
+    table tr td {
+        padding: 4px;
+        border: 1px solid #ccc;
+    }
+
+    table thead tr {
+        font-weight: bold;
+    }
+</style>
+<div class="text-left">
+    <h1 class="display-4">Welcome DateTime!</h1>
+    <p>Razor DateTime.Now: @DateTime.Now.ToString("O")</p>
+    <p>Server DateTime.Now: @ViewBag.dateTimeNow.ToString("O")</p>
+    <p>Server DateTime.UtcNow: @ViewBag.dateTimeUtcNow.ToString("O")</p>
+    <p>Server DateTimeOffset.Now: @ViewBag.dateTimeOffsetNow.ToString("O")</p>
+    <p>Server DateTimeOffset.UtcNow: @ViewBag.dateTimeOffsetUtcNow.ToString("O")</p>
+    <p>Server TimeZoneInfo.Local: @ViewBag.timeZonesLocal</p>
+    <p>Database server time: @ViewBag.ServerTime</p>
+
+    <h2>Post data</h2>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+    {
+        <input type="hidden" name="dateFromClientHidden" id="dateFromClientHidden" />
+        @Html.Hidden("RazorHiddenDateTimeNow", DateTime.Now)
+        @Html.Hidden("RazorHiddenDateTimeOffsetNow", DateTimeOffset.Now)
+        @Html.Hidden("RazorHiddenDateTimeUtcNow", DateTime.UtcNow)
+        @Html.Hidden("RazorHiddenDateTimeUtcOffsetNow", DateTimeOffset.UtcNow)
+        <input type="submit" value="Submit" />
+    }
+    <p>Date received from client onload: @ViewBag.dateFromClient</p>
+    <p>Date received from client hidden Razor (Now): @ViewBag.razorHiddenDateTimeNow?.ToString("O") (time when form was generated)</p>
+    <p>Date received from client hidden Razor (Offset Now): @ViewBag.razorHiddenDateTimeOffsetNow?.ToString("O") (time when form was generated)</p>
+    <p>Date received from client hidden Razor (UtcNow): @ViewBag.razorHiddenDateTimeUtcNow?.ToString("O") (time when form was generated)</p>
+    <p>Date received from client hidden Razor (Offset UtcNow): @ViewBag.razorHiddenDateTimeOffsetUtcNow?.ToString("O") (time when form was generated)</p>
+
+    <h2>Mongo database</h2>
+    <table>
+        <thead>
+            <tr>
+                <td>ServerDateTimeNow</td>
+                <td>ServerDateTimeUtcNow</td>
+                <td>ServerDateTimeOffsetNow</td>
+                <td>ServerDateTimeOffsetUtcNow</td>
+                <td>DateFromClientJavaScript</td>
+                <td>razorHiddenDateTimeNow</td>
+                <td>razorHiddenDateTimeUtcNow</td>
+            </tr>
+        </thead>
+        @if (this.ViewBag.Results != null)
+        {
+            @foreach (DateTimeEntry item in this.ViewBag.Results)
+            {
+                <tr>
+                    <td>@item.ServerDateTimeNow.ToString("O")</td>
+                    <td>@item.ServerDateTimeUtcNow.ToString("O")</td>
+                    <td>@item.ServerDateTimeOffsetNow.ToString("O")</td>
+                    <td>@item.ServerDateTimeOffsetUtcNow.ToString("O")</td>
+                    <td>@item.DateFromClientJavaScript</td>
+                    <td>@item.DateTimeNowRazor.ToString("O")</td>
+                    <td>@item.DateTimeUtcNowRazor.ToString("O")</td>
+                </tr>
+            }
+        }
+
+    </table>
+</div>
